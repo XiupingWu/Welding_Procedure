@@ -98,14 +98,26 @@ def parse_welding_data(file_path, sheetNum = 0):
 
             current_group['程序段'].append({row[0] : segment_data});
             row_index+=3;
-
+    
     return json.dumps(results, indent=2, ensure_ascii=False)
 
 # 使用main函数封装主逻辑
 def main():
-    carbonSteel_pentration_aid = parse_welding_data('./excel/碳钢打底焊接工艺.xlsx', 0)
-    with open('output.json', 'w', encoding='utf-8') as f:
-        f.write(carbonSteel_pentration_aid)
+    # 读取Excel文件
+    excel_file = './excel/碳钢打底焊接工艺.xlsx'
+    
+    # 获取所有工作表名称
+    sheets = pd.ExcelFile(excel_file).sheet_names
+    print(sheets);
+    # 遍历每个工作表
+    for index, sheet_name in enumerate(sheets):
+        # 解析当前工作表数据
+        sheet_data = parse_welding_data(excel_file, index)
+        
+        # 生成以工作表名称命名的JSON文件
+        output_file = f'output_{sheet_name}.json'
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(sheet_data)
 
 if __name__ == '__main__':
     main()
