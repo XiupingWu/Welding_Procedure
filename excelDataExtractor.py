@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-from collections import defaultdict
 
 def safe_convert(value, target_type):
     if not pd.isna(value):
@@ -101,9 +100,12 @@ def parse_welding_data(file_path, sheetNum = 0):
             row_index+=3;
 
     return json.dumps(results, indent=2, ensure_ascii=False)
-# 使用示例
-carbonSteel_pentration_aid = parse_welding_data('./excel/碳钢打底焊接工艺.xlsx',0);
-carbonSteel_pentration_aid_none = parse_welding_data('./excel/碳钢打底焊接工艺.xlsx',1);
 
-with open('output.json', 'w', encoding='utf-8') as f:
-    f.write(carbonSteel_pentration_aid)
+# 使用main函数封装主逻辑
+def main():
+    carbonSteel_pentration_aid = parse_welding_data('./excel/碳钢打底焊接工艺.xlsx', 0)
+    with open('output.json', 'w', encoding='utf-8') as f:
+        f.write(carbonSteel_pentration_aid)
+
+if __name__ == '__main__':
+    main()
