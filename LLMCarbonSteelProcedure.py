@@ -21,6 +21,7 @@ class WeldingProcedureGenerator:
                 ]
         
         for param in params:
+            print();
             self.models[param] = DecisionTreeRegressor()
             self.models[param].fit(X, y[param])
             
@@ -142,9 +143,9 @@ class WeldingProcedureGenerator:
             if match:
                 success += 1
             else:
-                print(f"Mismatch in record: {inputs}")
-                print("Predicted:", predicted)
-                print("Actual:   ", actual)
+                print(f"Mismatch in record: {inputs} \n")
+                print(f"Predicted: {predicted} \n")
+                print(f"Actual: {actual} \n")
         
         print(f"Validation Accuracy: {success/len(self.data)*100:.2f}%")
 
@@ -156,15 +157,15 @@ generator = WeldingProcedureGenerator(data)
 generator.validate()
 
 # 使用示例
-inputs = {
-    "材质": "碳钢",
-    "厚度": 4.0,
-    "坡口角度": 37.0,
-    "钝边": 1.0,
-    "间隙": 1.6,
-    "直径": 60,
-    "增透剂": "无"
-}
+# inputs = {
+#     "材质": "碳钢",
+#     "厚度": 6.0,
+#     "坡口角度": 30,
+#     "钝边": 1,
+#     "间隙": 2.5,
+#     "直径": 114,
+#     "增透剂": "无"
+# }
 
-output = generator.generate_procedure(inputs)
-print(json.dumps(output, indent=2, ensure_ascii=False))
+# output = generator.generate_procedure(inputs)
+# print(json.dumps(output, indent=2, ensure_ascii=False))

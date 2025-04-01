@@ -10,7 +10,7 @@
 ## 系统架构
 系统由两个主要模块组成：
 
-### 1. 数据提取模块 (excelDataExtractor.py)
+### 1. 数据提取模块 (ExcelDataExtractor.py)
 - 从Excel文件中读取焊接工艺数据
 - 解析并转换数据格式
 - 输出标准化的JSON格式数据
