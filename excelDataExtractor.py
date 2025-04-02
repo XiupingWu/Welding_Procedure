@@ -92,39 +92,37 @@ def parse_welding_data(file_path, sheetNum = 0):
                     segment_data['右侧停留'] = safe_convert(segment_row_next_row[6], float);
             
             if not pd.isna(segment_data['焊接角度']):
-                current_group['程序段'].append({'程序段1': segment_data});
+                current_group['程序段'].append(segment_data)  # 直接添加segment_data
             row_index+=3;
 
             # 计算所有程序段的焊接角度之和
-            total_angle = sum(list(x.values())[0]['焊接角度'] for x in current_group['程序段'])
+            total_angle = sum(x['焊接角度'] for x in current_group['程序段'])
             
             # 计算各参数的平均值，忽略0值，并向上取整
             def avg_ignore_zero(values):
                 non_zero_values = [v for v in values if v != 0]
                 return math.ceil(sum(non_zero_values) / len(non_zero_values)) if non_zero_values else 0
             
-            avg_peak_current = avg_ignore_zero(list(x.values())[0]['峰值电流'] for x in current_group['程序段'])
-            avg_base_current = avg_ignore_zero(list(x.values())[0]['基值电流'] for x in current_group['程序段'])
-            avg_peak_wire_speed = avg_ignore_zero(list(x.values())[0]['峰值丝速'] for x in current_group['程序段'])
-            avg_base_wire_speed = avg_ignore_zero(list(x.values())[0]['基值丝速'] for x in current_group['程序段'])
+            avg_peak_current = avg_ignore_zero(x['峰值电流'] for x in current_group['程序段'])
+            avg_base_current = avg_ignore_zero(x['基值电流'] for x in current_group['程序段'])
+            avg_peak_wire_speed = avg_ignore_zero(x['峰值丝速'] for x in current_group['程序段'])
+            avg_base_wire_speed = avg_ignore_zero(x['基值丝速'] for x in current_group['程序段'])
             
             # 创建新的综合程序段
             combined_segment = {
-                '程序段1': {
-                    '焊接角度': total_angle,
-                    '峰值电流': avg_peak_current,
-                    '基值电流': avg_base_current,
-                    '峰值丝速': avg_peak_wire_speed,
-                    '基值丝速': avg_base_wire_speed,
-                    # 其他参数保持不变，取第一个程序段的值
-                    '峰值比例%': current_group['程序段'][0]['程序段1']['峰值比例%'],
-                    '摆动速度': current_group['程序段'][0]['程序段1']['摆动速度'],
-                    '左侧停留': current_group['程序段'][0]['程序段1']['左侧停留'],
-                    '焊接速度': current_group['程序段'][0]['程序段1']['焊接速度'],
-                    '脉冲频率': current_group['程序段'][0]['程序段1']['脉冲频率'],
-                    '摆动幅度': current_group['程序段'][0]['程序段1']['摆动幅度'],
-                    '右侧停留': current_group['程序段'][0]['程序段1']['右侧停留']
-                }
+                '焊接角度': total_angle,
+                '峰值电流': avg_peak_current,
+                '基值电流': avg_base_current,
+                '峰值丝速': avg_peak_wire_speed,
+                '基值丝速': avg_base_wire_speed,
+                # 其他参数保持不变，取第一个程序段的值
+                '峰值比例%': current_group['程序段'][0]['峰值比例%'],
+                '摆动速度': current_group['程序段'][0]['摆动速度'],
+                '左侧停留': current_group['程序段'][0]['左侧停留'],
+                '焊接速度': current_group['程序段'][0]['焊接速度'],
+                '脉冲频率': current_group['程序段'][0]['脉冲频率'],
+                '摆动幅度': current_group['程序段'][0]['摆动幅度'],
+                '右侧停留': current_group['程序段'][0]['右侧停留']
             }
             
             current_group['程序段'] = [combined_segment]
@@ -133,7 +131,7 @@ def parse_welding_data(file_path, sheetNum = 0):
     indices_to_remove = []
 
     for index, el in enumerate(results):
-        if el['程序段'][0]['程序段1']['峰值丝速'] == 0 and el['程序段'][0]['程序段1']['基值丝速']==0:
+        if el['程序段'][0]['峰值丝速'] == 0 and el['程序段'][0]['基值丝速']==0:
             indices_to_remove.append(index)
 
     # 从后往前删除
