@@ -143,7 +143,7 @@ def parse_welding_data(file_path, sheetNum = 0):
 # 使用main函数封装主逻辑
 def main():
 
-    main_output_dir = './outpout';
+    main_output_dir = './output';
     os.makedirs(main_output_dir, exist_ok=True);
     # 读取Excel文件
     excel_file = './excel/碳钢打底焊接工艺.xlsx'
