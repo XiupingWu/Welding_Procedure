@@ -1,9 +1,7 @@
 import json
 import numpy as np
 from sklearn.tree import DecisionTreeRegressor
-from collections import OrderedDict
-from pathlib import Path
-from joblib import dump, load
+from joblib import dump
 
 class WeldingProcedureTrainer:
     def __init__(self, data, model_path='./TrainedModels/welding_procedure_models.joblib'):
