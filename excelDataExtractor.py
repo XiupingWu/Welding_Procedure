@@ -36,12 +36,6 @@ def parse_welding_data(file_path, sheetNum = 0):
                 '间隙': safe_convert(next_row[4], float),  # 焊缝间隙(mm)
                 '直径': None,  # 焊丝直径(mm)
                 '增透剂': next_row[5] if not pd.isna(next_row[5]) else None,  # 是否使用增透剂
-                # 焊机设定参数不影响工艺
-                # '起弧电流': None,  # 起弧电流(A)
-                # '预热时间': None,  # 预热时间(s)
-                # '拖弧长度': None,  # 拖弧长度(mm)
-                # '提枪高度': None,  # 提枪高度(mm)
-                # '是否抽丝': None,  # 是否抽丝
                 '程序段': []  # 焊接程序段列表
             }
             results.append(current_group)
@@ -49,11 +43,6 @@ def parse_welding_data(file_path, sheetNum = 0):
         # 焊丝配置解析
         elif row[1] == '直径':
             current_group['直径'] = safe_convert(next_row[1], int)
-            # current_group['起弧电流'] = safe_convert(next_row[2], int)
-            # current_group['预热时间'] = safe_convert(next_row[3], int)
-            # current_group['拖弧长度'] = safe_convert(next_row[4], int)
-            # current_group['提枪高度'] = safe_convert(next_row[5], int)
-            # current_group['是否抽丝'] = True;
 
         # 程序段解析
         elif isinstance(row[0], str) and '程序段' in row[0]:
@@ -140,7 +129,17 @@ def parse_welding_data(file_path, sheetNum = 0):
             
             current_group['程序段'] = [combined_segment]
     
-    # return json.dumps(results, indent=2, ensure_ascii=False)
+    # 移除全部丝速为0的数据
+    indices_to_remove = []
+
+    for index, el in enumerate(results):
+        if el['程序段'][0]['程序段1']['峰值丝速'] == 0 and el['程序段'][0]['程序段1']['基值丝速']==0:
+            indices_to_remove.append(index)
+
+    # 从后往前删除
+    for index in sorted(indices_to_remove, reverse=True):
+        del results[index]
+
     return results;
 
 # 使用main函数封装主逻辑
