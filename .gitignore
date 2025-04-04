@@ -1,5 +1,5 @@
 venv/ 
 excel/
 output/
-TrainedModels/
+trained_models/
 *.json

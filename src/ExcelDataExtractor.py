@@ -141,28 +141,35 @@ def parse_welding_data(file_path, sheetNum = 0):
     return results;
 
 # 使用main函数封装主逻辑
-def main():
-
-    main_output_dir = './output';
-    os.makedirs(main_output_dir, exist_ok=True);
-    # 读取Excel文件
-    excel_file = './excel/碳钢打底焊接工艺.xlsx'
+def main():    
+    # 指定要读取的文件夹路径
+    excel_dir = './excel'
     
-    # 获取所有工作表名称
-    sheets = pd.ExcelFile(excel_file).sheet_names
-    sheetName = os.path.splitext(os.path.basename(excel_file))[0]
-    outputSheets = [];
-    # 遍历每个工作表
-    for index in range(len(sheets)):
-        # 解析当前工作表数据
-        sheet_data = parse_welding_data(excel_file, index);
-        outputSheets+=sheet_data;
-    print(len(outputSheets))
-    outputSheets_json = json.dumps(outputSheets, indent=2, ensure_ascii=False)
-    # 生成以工作表名称命名的JSON文件
-    output_file = f'{main_output_dir}/output_{sheetName}.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(outputSheets_json)
+    # 获取文件夹下所有Excel文件
+    excel_files = [f for f in os.listdir(excel_dir) if f.endswith('.xlsx')]
+    
+    # 遍历每个Excel文件
+    for excel_file in excel_files:
+        file_path = os.path.join(excel_dir, excel_file)
+        
+        # 获取所有工作表名称
+        sheets = pd.ExcelFile(file_path).sheet_names
+        sheetName = os.path.splitext(os.path.basename(excel_file))[0]
+        outputSheets = []
+        
+        # 遍历每个工作表
+        for index in range(len(sheets)):
+            # 解析当前工作表数据
+            sheet_data = parse_welding_data(file_path, index)
+            outputSheets += sheet_data
+        
+        print(len(outputSheets))
+        outputSheets_json = json.dumps(outputSheets, indent=2, ensure_ascii=False)
+        
+        # 生成以工作表名称命名的JSON文件
+        output_file = f'output/output_{sheetName}.json'
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(outputSheets_json)
 
 if __name__ == '__main__':
     main()
