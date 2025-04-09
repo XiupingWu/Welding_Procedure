@@ -1,156 +1,116 @@
-# 焊接工艺参数生成系统
+# 焊接工艺参数预测系统
 
 ## 项目概述
-本系统用于自动生成碳钢打底焊接工艺参数，包含以下主要功能：
-1. 从Excel文件中提取焊接工艺数据
-2. 使用机器学习模型预测焊接参数
-3. 生成标准化的焊接工艺程序
-4. 验证模型预测准确性
-
-## 系统架构
-系统由两个主要模块组成：
-
-### 1. 数据提取模块 (ExcelDataExtractor.py)
-- 从Excel文件中读取焊接工艺数据
-- 解析并转换数据格式
-- 输出标准化的JSON格式数据
-
-### 2. 工艺生成模块 (LLMCarbonSteelProcedure.py)
-- 使用决策树回归模型预测焊接参数
-- 处理特殊工艺案例
-- 生成完整的焊接工艺程序
-- 提供模型验证功能
+此系统使用机器学习技术自动预测和生成焊接工艺参数，特别针对碳钢和不锈钢打底焊接工艺优化。系统通过分析历史焊接数据，构建精确的预测模型，为焊接工程师提供可靠的工艺参数建议。
 
 ## 主要功能
-- **数据解析**：支持从Excel文件中提取焊接工艺参数
-- **参数预测**：基于材料厚度、坡口角度等特征预测焊接参数
-- **特殊案例处理**：识别并处理特殊工艺组合
-- **模型验证**：验证预测结果与实际数据的匹配度
+- **数据提取**：从Excel工艺文件中自动解析和标准化焊接工艺数据
+- **参数预测**：基于材料特性（厚度、坡口角度、钝边等）预测最优焊接参数
+- **精确建模**：为每个焊接参数单独训练专业模型，提高预测精度
+- **特征工程**：自动创建派生特征以捕捉复杂的非线性关系
+- **工艺验证**：提供模型性能验证和结果分析功能
 
-## 使用说明
-1. 准备Excel数据文件，格式参考`./excel/碳钢打底焊接工艺.xlsx`
-2. 运行数据提取模块：
-   ```bash
-   python excelDataExtractor.py
-   ```
-3. 使用工艺生成模块：
-   ```python
-   generator = WeldingProcedureGenerator(data)
-   output = generator.generate_procedure(inputs)
-   ```
-4. 验证模型准确性：
-   ```python
-   generator.validate()
-   ```
+## 系统架构
 
-## 输入输出
-- 输入：Excel文件，包含材料参数和焊接工艺数据
-- 输出：JSON格式的标准化焊接工艺参数
+### 1. 数据处理模块 (ExcelDataExtractor.py)
+- 从Excel文件中提取原始焊接工艺数据
+- 处理数据缺失、异常和格式问题
+- 标准化数据结构并转换为JSON格式
+- 合并多程序段数据，计算参数平均值
 
-## 依赖库
-- numpy
-- pandas
-- scikit-learn
+### 2. 机器学习训练模块 (MLTrainer/WeldingProcedureMLTrainer.py)
+- 数据预处理和特征工程
+- 特征重要性评估和特征子集选择
+- 多模型训练（决策树、随机森林、梯度提升树）
+- 交叉验证和性能评估
+- 模型导出和保存
 
-## 注意事项
-1. 确保Excel文件格式符合要求
-2. 模型训练数据需要定期更新
-3. 特殊工艺案例需要手动维护
+### 3. 参数生成模块 (WeldingProcedureGenerator.py)
+- 加载训练好的模型和特征映射
+- 基于输入条件生成焊接参数预测
+- 应用后处理规则优化预测结果
+- 标准化输出格式
 
-## 示例
-```python
-inputs = {
-    "材质": "碳钢",
-    "厚度": 4.0,
-    "坡口角度": 37.0,
-    "钝边": 1.0,
-    "间隙": 1.6,
-    "直径": 60,
-    "增透剂": "无"
-}
-output = generator.generate_procedure(inputs)
+## 技术亮点
+- **特征工程**：实现了多种高级特征转换（对数变换、二次项、交互特征等）
+- **特征选择**：为每个焊接参数选择最佳特征子集，提高预测精度
+- **多模型比较**：支持多种机器学习算法，可根据数据特性选择最优模型
+- **参数优化**：应用领域知识实现预测结果的智能后处理调整
+
+## 安装和使用
+
+### 环境需求
+- Python 3.6+
+- 依赖库：numpy, pandas, scikit-learn, joblib
+
+### 安装
+```bash
+# 克隆项目
+git clone https://github.com/username/welding-procedure-training-model.git
+cd welding-procedure-training-model
+
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# 或
+venv\Scripts\activate  # Windows
+
+# 安装依赖
+pip install numpy pandas scikit-learn joblib
 ```
 
-## 维护
-- 定期更新训练数据
-- 优化模型参数
-- 添加新的特殊工艺案例
+### 使用流程
 
+1. **数据准备**：将焊接工艺Excel文件放入`excel/`目录
 
-# Welding Procedure Generation System
-
-## Project Overview
-This system is designed to automatically generate welding parameters for carbon steel root welding, including the following main features:
-1. Extract welding process data from Excel files
-2. Predict welding parameters using machine learning models
-3. Generate standardized welding procedures
-4. Validate model prediction accuracy
-
-## System Architecture
-The system consists of two main modules:
-
-### 1. Data Extraction Module (excelDataExtractor.py)
-- Read welding process data from Excel files
-- Parse and transform data format
-- Output standardized JSON format data
-
-### 2. Procedure Generation Module (LLMCarbonSteelProcedure.py)
-- Predict welding parameters using Decision Tree Regression models
-- Handle special process cases
-- Generate complete welding procedures
-- Provide model validation functionality
-
-## Main Features
-- **Data Parsing**: Extract welding parameters from Excel files
-- **Parameter Prediction**: Predict welding parameters based on material thickness, groove angle, etc.
-- **Special Case Handling**: Identify and process special process combinations
-- **Model Validation**: Validate the accuracy of prediction results against actual data
-
-## Usage Instructions
-1. Prepare Excel data file, refer to `./excel/碳钢打底焊接工艺.xlsx` for format
-2. Run data extraction module:
+2. **数据提取**：
    ```bash
-   python excelDataExtractor.py
+   python src/ExcelDataExtractor.py
    ```
-3. Use procedure generation module:
+   提取的数据将保存在`output/`目录
+
+3. **模型训练**：
+   ```bash
+   python src/MLTrainer/WeldingProcedureMLTrainer.py
+   ```
+   训练后的模型将保存在`trained_models/`目录
+
+4. **参数预测**：
    ```python
-   generator = WeldingProcedureGenerator(data)
-   output = generator.generate_procedure(inputs)
+   from src.WeldingProcedureGenerator import WeldingProcedureGenerator
+   
+   # 初始化生成器
+   generator = WeldingProcedureGenerator('./trained_models/model_package.pkl')
+   
+   # 定义输入参数
+   input_params = {
+       "材质": "碳钢",
+       "厚度": 5.0,
+       "坡口角度": 37.0,
+       "钝边": 1.0,
+       "间隙": 1.6,
+       "直径": 60,
+       "增透剂": "是"
+   }
+   
+   # 生成焊接参数
+   welding_params = generator.generate(input_params)
+   print(welding_params)
    ```
-4. Validate model accuracy:
-   ```python
-   generator.validate()
-   ```
 
-## Input/Output
-- Input: Excel file containing material parameters and welding process data
-- Output: Standardized welding parameters in JSON format
+## 最新更新
+- 增强特征工程，添加交互特征和非线性变换
+- 优化模型参数，提高预测准确度
+- 改进后处理规则，更好地处理特殊工艺案例
 
-## Dependencies
-- numpy
-- pandas
-- scikit-learn
+## 维护与扩展
+- 定期更新训练数据，保持模型准确性
+- 添加新的材料和工艺类型支持
+- 优化特征集和模型超参数
+- 实现更多的后处理规则和模型融合策略
 
-## Notes
-1. Ensure Excel file format meets requirements
-2. Model training data needs regular updates
-3. Special process cases require manual maintenance
+## 贡献
+欢迎通过提交Issue或Pull Request为项目贡献代码和改进建议。
 
-## Example
-```python
-inputs = {
-    "Material": "Carbon Steel",
-    "Thickness": 4.0,
-    "Groove Angle": 37.0,
-    "Blunt Edge": 1.0,
-    "Gap": 1.6,
-    "Diameter": 60,
-    "Penetration Aid": "None"
-}
-output = generator.generate_procedure(inputs)
-```
-
-## Maintenance
-- Regularly update training data
-- Optimize model parameters
-- Add new special process cases 
+## 许可
+[请补充适当的许可信息]
