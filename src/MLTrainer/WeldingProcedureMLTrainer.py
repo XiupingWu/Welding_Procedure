@@ -84,7 +84,7 @@ class WeldingModelTrainer:
     def train_with_feature_selection(
             self, 
             save_path='./trained_models', 
-            threshold=0., 
+            threshold=0.6, 
             do_validation=True, 
             model_type='dt', 
             n_jobs=-1
