@@ -5,10 +5,12 @@ import numpy as np;
 
 class WeldingProcedureGenerator:
     def __init__(self, model_path):
+        
         package = joblib.load(model_path)
         self.models = package['models']
         self.material_encoder = package['material_encoder']
         self.feature_names = package['feature_names']
+        self.model_type = package.get('model_type', 'dt')  # 添加模型类型信息
         # self.reverse_material = {v:k for k,v in self.material_encoder.items()}
     
     def _build_features(self, inputs):
@@ -37,16 +39,22 @@ class WeldingProcedureGenerator:
             inputs['钝边'] / (inputs['厚度'] + 0.001)  # 钝边比例
         ])
         
-        return features
+        return np.array(features)
     
     def generate(self, inputs):
         # 特征构建
-        features = self._build_features(inputs)
+        all_features = self._build_features(inputs)
             
-        # 参数预测
+        # 针对每个参数使用特定的特征子集进行预测
         params = {}
-        for name, model in self.models.items():
-            params[name] = round(float(model.predict([features])[0]), 1)
+        for name, model_info in self.models.items():
+            # 提取当前参数对应的特征子集
+            feature_indices = model_info['feature_indices']
+            selected_features = all_features[feature_indices]
+            
+            # 使用模型预测
+            model = model_info['model']
+            params[name] = round(float(model.predict([selected_features])[0]), 1)
         
         # 后处理规则
         params.update(self._post_process(inputs, params))
@@ -95,6 +103,16 @@ class WeldingProcedureGenerator:
             ('摆动幅度', params['摆动幅度']),
             ('右侧停留', params['右侧停留'])
         ])
+    
+    def get_model_info(self):
+        """获取模型信息，用于调试和分析"""
+        model_info = {}
+        for param, model_data in self.models.items():
+            model_info[param] = {
+                '使用特征': model_data['feature_names'],
+                '模型类型': self.model_type
+            }
+        return model_info
 
 # ----------------- 使用示例 -----------------
 if __name__ == "__main__":    
@@ -113,3 +131,6 @@ if __name__ == "__main__":
     
     print("\n生成的焊接工艺:")
     print(json.dumps(generator.generate(test_input), indent=2, ensure_ascii=False))
+    
+    # print("\n模型信息:")
+    # print(json.dumps(generator.get_model_info(), indent=2, ensure_ascii=False))
