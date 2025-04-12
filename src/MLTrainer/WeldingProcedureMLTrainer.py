@@ -84,9 +84,9 @@ class WeldingModelTrainer:
     def train_with_feature_selection(
             self, 
             save_path='./trained_models', 
-            threshold=0.6, 
+            threshold=0.5, 
             do_validation=True, 
-            model_type='dt', 
+            model_type='rf', 
             n_jobs=-1
         ):
         """
@@ -108,10 +108,19 @@ class WeldingModelTrainer:
         # 准备所有特征的完整数据集
         full_X = []
         param_keys = [
-                        '峰值电流','焊接速度','摆动速度',
+                        '峰值电流','峰值丝速','焊接速度','摆动速度',
                         '摆动幅度','左侧停留','右侧停留',
-                        '脉冲频率','峰值丝速','峰值比例%'
+                        '脉冲频率','峰值比例%'
                     ]
+
+        # param_keys = [
+        #     '峰值电流',
+        #     '基值电流',
+        #     '峰值丝速',
+        #     '基值丝速',
+        #     '峰值比例%',
+        #     '焊接速度',
+        # ]
 
         self.y = {key: [] for key in param_keys}
         

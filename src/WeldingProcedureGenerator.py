@@ -120,12 +120,12 @@ if __name__ == "__main__":
     generator = WeldingProcedureGenerator('./trained_models/model_package.pkl')
     
     test_input = {
-        "材质": "不锈钢",
-        "厚度": 10.0,
-        "坡口角度": 30.0,
-        "钝边": 1.5,
-        "间隙": 0,
-        "直径": 133,
+        "材质": "碳钢",
+        "厚度": 5.0,
+        "坡口角度": 0.0,
+        "钝边": 0.0,
+        "间隙": 0.0,
+        "直径": 60,
         "增透剂": "是",
     }
     
